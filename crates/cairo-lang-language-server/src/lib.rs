@@ -52,7 +52,7 @@ use cairo_lang_utils::ordered_hash_set::OrderedHashSet;
 use cairo_lang_utils::{try_extract_matches, OptionHelper, Upcast};
 use log::warn;
 use lsp::notification::Notification;
-use salsa::InternKey;
+use salsa::{InternKey, Database, SweepStrategy};
 use semantic_highlighting::token_kind::SemanticTokenKind;
 use semantic_highlighting::SemanticTokensTraverser;
 use serde::{Deserialize, Serialize};
@@ -372,6 +372,7 @@ impl Backend {
                 self.detect_crate_for(&mut db, file_path).await;
             }
         }
+        db.sweep_all(SweepStrategy::discard_outdated());
         drop(db);
         self.refresh_diagnostics().await
     }
