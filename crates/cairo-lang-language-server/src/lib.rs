@@ -511,6 +511,7 @@ impl LanguageServer for Backend {
             if is_cairo_file_path(&change.uri) {
                 let file = file(&db, change.uri.clone());
                 PrivRawFileContentQuery.in_db_mut(db.as_files_group_mut()).invalidate(&file);
+                PrivRawFileContentQuery.in_db_mut(db.as_files_group_mut()).set_lru_capacity(64);
             }
         }
         drop(db);
@@ -581,6 +582,7 @@ impl LanguageServer for Backend {
         let mut db = self.db_mut().await;
         let file = file(&db, params.text_document.uri);
         PrivRawFileContentQuery.in_db_mut(db.as_files_group_mut()).invalidate(&file);
+        PrivRawFileContentQuery.in_db_mut(db.as_files_group_mut()).set_lru_capacity(64);
         db.override_file_content(file, None);
     }
 
